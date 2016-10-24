@@ -65,14 +65,16 @@ void setup()
 
 void presentation() {
   // Send the sketch version information to the gateway and Controller
-  sendSketchInfo("Temperature Sensor", "1.1");
+  sendSketchInfo("Custom Sensor", "1.1");
 
   // Fetch the number of attached temperature sensors  
   numSensors = sensors.getDeviceCount();
 
   // Present all sensors to controller
+  present(0, S_BINARY);  // Pump status On/Off
+  present(1, S_CUSTOM);  // Pump Pressure reading
   for (int i=0; i<numSensors && i<MAX_ATTACHED_DS18B20; i++) {   
-     present(i, S_TEMP);
+     present(i+2, S_TEMP);
   }
 }
 
@@ -84,7 +86,7 @@ void loop()
   // query conversion time and sleep until conversion completed
   int16_t conversionTime = sensors.millisToWaitForConversion(sensors.getResolution());
   // sleep() call can be replaced by wait() call if node need to process incoming messages (or if node is repeater)
-  sleep(conversionTime);
+  wait(conversionTime);
 
   // Read temperatures and send them to controller 
   for (int i=0; i<numSensors && i<MAX_ATTACHED_DS18B20; i++) {
@@ -105,5 +107,5 @@ void loop()
       lastTemperature[i]=temperature;
     }
   }
-  sleep(SLEEP_TIME);
+  wait(SLEEP_TIME);
 }
